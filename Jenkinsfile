@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/farsbrayek3/adoption-Project.git'
+                git branch: 'main', url: 'https://github.com/farsbrayek3/adoption-Project.git'
             }
         }
 
