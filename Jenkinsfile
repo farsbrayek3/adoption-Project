@@ -30,14 +30,17 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh 'mvn sonar:sonar'
-                }
-            }
-        }
 
+        stage('SonarQube Analysis') {
+          environment { scannerHome = tool 'SonarScanner' }
+          steps {
+            withSonarQubeEnv('SonarQube') {
+              sh "${scannerHome}/bin/sonar-scanner " +
+                 "-Dsonar.projectKey=adoptionproject " +
+                 "-Dsonar.sources=src "
+            }
+          }
+        }
         stage('Package') {
             steps {
                 sh 'mvn package'
