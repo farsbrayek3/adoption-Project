@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: dietmar
+Build-Jdk: 11.0.15
+Extension-Name: sonargraph-integration
+Specification-Title: The Jenkins Plugins Parent POM Project
+Specification-Vendor: hello2morrow GmbH, hello2morrow Inc., hello2morr
+ ow S.A.S
+Implementation-Vendor: hello2morrow GmbH, hello2morrow Inc., hello2mor
+ row S.A.S
+Implementation-Title: sonargraph-integration
+Implementation-Version: 5.0.2
+Group-Id: org.jenkins-ci.plugins
+Short-Name: sonargraph-integration
+Long-Name: Sonargraph Integration Jenkins Plugin
+Url: https://github.com/jenkinsci/sonargraph-integration-plugin
+Minimum-Java-Version: 1.8
+Plugin-Version: 5.0.2
+Hudson-Version: 2.222.4
+Jenkins-Version: 2.222.4
+Plugin-Developers: Dietmar Menges:dietmarmenges:
+Plugin-License-Name: Apache License 2
+Plugin-License-Url: http://www.apache.org/licenses/LICENSE-2.0
+Plugin-ScmUrl: https://github.com/jenkinsci/sonargraph-integration-plu
+ gin
+

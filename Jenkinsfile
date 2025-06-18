@@ -6,6 +6,11 @@ pipeline {
         jdk 'Java 17'
     }
 
+    environment {
+        // Pour éviter les erreurs d'encodage dans Maven
+        JAVA_OPTS = "-Dfile.encoding=UTF-8"
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -13,16 +18,21 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build with Maven') {
             steps {
-                sh 'mvn clean install'
+                sh 'mvn clean install -DskipTests'
             }
         }
 
-        stage('Docker Build & Push') {
+        stage('Test') {
             steps {
-                sh 'docker build -t adoption-project .'
-                // si tu veux pousser vers Docker Hub : docker push
+                sh 'mvn test'
+            }
+        }
+
+        stage('Package') {
+            steps {
+                sh 'mvn package -DskipTests'
             }
         }
 
@@ -34,18 +44,9 @@ pipeline {
             }
         }
 
-        stage('Upload to Nexus') {
+        stage('Docker Build') {
             steps {
-                nexusArtifactUploader(
-                    nexusVersion: 'nexus3',
-                    protocol: 'http',
-                    nexusUrl: 'nexus:8081',
-                    groupId: 'com.adoption',
-                    version: '1.0.0',
-                    repository: 'maven-releases',
-                    credentialsId: 'nexus-creds',
-                    artifacts: [[artifactId: 'adoption', classifier: '', file: 'target/adoption.jar', type: 'jar']]
-                )
+                sh 'docker build -t adoption-project .'
             }
         }
     }

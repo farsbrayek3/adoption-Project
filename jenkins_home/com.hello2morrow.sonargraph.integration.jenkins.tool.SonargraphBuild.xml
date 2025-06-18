@@ -1,0 +1,4 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<com.hello2morrow.sonargraph.integration.jenkins.tool.SonargraphBuild_-DescriptorImpl plugin="sonargraph-integration@5.0.2">
+  <installations class="com.hello2morrow.sonargraph.integration.jenkins.tool.SonargraphBuild-array"/>
+</com.hello2morrow.sonargraph.integration.jenkins.tool.SonargraphBuild_-DescriptorImpl>
