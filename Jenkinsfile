@@ -7,65 +7,63 @@ pipeline {
     }
 
     environment {
-        // Pour éviter les erreurs d'encodage dans Maven
-        JAVA_OPTS = "-Dfile.encoding=UTF-8"
+        GITHUB_CREDENTIALS = 'your-credential-id'
+        DOCKER_IMAGE = 'yourdockerhubusername/adoption-project'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/farsbrayek3/adoption-Project.git'
+                git branch: 'main', credentialsId: "${GITHUB_CREDENTIALS}", url: 'https://github.com/farsbrayek3/adoption-Project.git'
             }
         }
 
         stage('Build with Maven') {
             steps {
-                sh 'mvn clean install -DskipTests'
+                sh 'mvn clean compile'
             }
         }
 
-        stage('Test') {
+        stage('Unit Tests') {
             steps {
                 sh 'mvn test'
             }
         }
 
-        stage('Package') {
-            steps {
-                sh 'mvn package -DskipTests'
-            }
-        }
-
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('MySonarQubeServer') {
+                withSonarQubeEnv('SonarQube') {
                     sh 'mvn sonar:sonar'
                 }
             }
         }
 
-        stage('Docker Build') {
+        stage('Package') {
             steps {
-                sh 'docker build -t adoption-project .'
+                sh 'mvn package'
             }
         }
-        stage('Upload to Nexus') {
+
+        stage('Docker Build & Push') {
             steps {
-                nexusArtifactUploader(
-                    nexusVersion: 'nexus3',
-                    protocol: 'http',
-                    nexusUrl: 'nexus:8081',
-                    groupId: 'com.adoption',
-                    version: '1.0.0',
-                    repository: 'maven-releases',
-                    credentialsId: 'nexus-creds',
-                    artifacts: [[
-                        artifactId: 'adoption',
-                        classifier: '',
-                        file: 'target/adoption-project-0.0.1-SNAPSHOT.jar',
-                        type: 'jar'
-                    ]]
-                )
+                sh 'docker build -t $DOCKER_IMAGE .'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh 'docker push $DOCKER_IMAGE'
+                }
+            }
+        }
+
+        stage('Deploy with Docker Compose') {
+            steps {
+                sh 'docker-compose down || true'
+                sh 'docker-compose up -d'
+            }
+        }
+
+        stage('Publish to Nexus') {
+            steps {
+                sh 'mvn deploy'
             }
         }
     }
