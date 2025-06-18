@@ -49,5 +49,24 @@ pipeline {
                 sh 'docker build -t adoption-project .'
             }
         }
+        stage('Upload to Nexus') {
+            steps {
+                nexusArtifactUploader(
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    nexusUrl: 'nexus:8081',
+                    groupId: 'com.adoption',
+                    version: '1.0.0',
+                    repository: 'maven-releases',
+                    credentialsId: 'nexus-creds',
+                    artifacts: [[
+                        artifactId: 'adoption',
+                        classifier: '',
+                        file: 'target/adoption-project-0.0.1-SNAPSHOT.jar',
+                        type: 'jar'
+                    ]]
+                )
+            }
+        }
     }
 }
